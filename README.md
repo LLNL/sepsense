@@ -4,9 +4,32 @@ While deep learning technologies for computer vision have developed rapidly sinc
 
 This repository contains all the code required to replicate the results of our research paper, and the corresponding docker environment in which that code can be executed. All code is written in Python3 and utilizes the PyTorch library (v1.0) for neural network model training and evaluation. Jupyter notebooks are used to visualize images transformed with our code, in addition to plotting experimental results. We also include the specific parameter files used to execute our experiments, with the intent that these experiments can be replicated.
 
-## 
+## Capabilities
+This code has the ability to reproduce the experiments from our research paper, and many of our visualizations.
 
-## Instructions
+### Conduct Experiments
+The core purpose of the code is to measure how different sensor design configurations will affect recognition performance on the imagery these sensors will produce. For example, how will the imagery of a satellite sensor in orbit at 100km compare to that of one with an orbit at 500km? We mainly observe the effect of two optical parameters: focal length and aperture diameter. However, the system implemented in this code can explore many different factors which will affect image quality and recognition performance:
+- Modify sensor parameters
+- Modify image pre-processing methods
+- Use different CNN architectures
+- Solve different recognition problems
+    - Classification
+    - Retrieval
+- Use different machine learning objectives
+    - Cross-Entropy Loss
+    - Triplet Margin Loss
+
+### Analyze Results
+
+#### Show Transformations
+
+#### Plot Results
+
+#### Visualize Retrieval
+
+## Run Instructions
+This section contains the instructions required to replicate our research results, and conduct new experiments.
+
 ### Setup Environment
 The code in this repository is meant to run inside a docker environment. A Dockerfile is included in the REPO_ROOT/docker directory which contains an environment sufficient to run all included code. This Dockerfile is based on the official nvidia/cuda image with Ubuntu 18.04 and CUDA 10.
 
