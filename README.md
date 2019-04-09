@@ -24,10 +24,10 @@ The core purpose of the code is to measure how different sensor design configura
 #### Show Transformations
 
 #### Plot Results
-![Alt](/.md/plot.png "Title")
+![Alt](.md/plot.png "Title")
 
 #### Visualize Retrieval
-![Alt](/.md/retrieval.png "Title")
+![Alt](.md/retrieval.png "Title")
 
 ## Run Instructions
 This section contains the instructions required to replicate our research results, and conduct new experiments.
