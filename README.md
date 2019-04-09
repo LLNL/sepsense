@@ -15,8 +15,8 @@ To build the docker image:
 cd docker && ./build.sh
 ```
 ### Download Data
-This code is centered around the [link][https://github.com/fMoW/dataset "Functional Map of the World (fMoW) Dataset"]. The pre-processing and partitioning scripts assume that this dataset is being used, but most of the code is general, and can be adapted to other datasets.
-Instructions for downloading the fMoW dataset are included in the [link][https://github.com/fMoW/dataset "corresponding repo"].
+This code is centered around the [Functional Map of the World (fMoW) Dataset](https://github.com/fMoW/dataset). The pre-processing and partitioning scripts assume that this dataset is being used, but most of the code is general, and can be adapted to other datasets.
+Instructions for downloading the fMoW dataset are included in the [corresponding repo"](https://github.com/fMoW/dataset).
 ### Pre-Process Data
 ### Run Experiment
 ### View Results
