@@ -1,0 +1,204 @@
+# TO ADD:
+# - criterion
+# - optimizer
+
+# Parameters of the hardware, important for reproducibility
+hardware:
+    # Checked against CUDA_VISIBLE_DEVICES for correctness
+    num_gpu:
+        type: int
+
+# Parameters of the dataset, pro-processing, and partitioning
+data:
+    modality:
+        type: str
+        choices:
+            - rgb
+            - ms3
+            - ms8
+    out_units:
+        type: str
+        choices:
+            - radiance
+            - reflectance
+    interp_type:
+        type: str
+        choices:
+            - nearest
+            - bilinear
+    interp_range:
+        type: str
+        choices:
+            - default
+            - noscale
+    tensor_range:
+        type: str
+        choices:
+            - default
+            - noscale
+    normalize:
+        type: bool
+    minmax:
+        type: bool
+    minmax_channel:
+        type: bool
+    data_mean:
+        type: array
+    data_std:
+        type: array
+    resolution:
+        type: int
+    num_class:
+        type: int
+    num_inst:
+        type: int
+    proc_mode:
+        type: str
+        choices:
+            - crop
+            - resize
+            - none
+    partition_dir:
+        type: str
+    preload:
+        type: bool
+    preload_dir:
+        type: str
+
+problem:
+    objective:
+        type: str
+        choices:
+            - classifier
+            - triplet
+    num_classes:
+        type: int
+    num_instances:
+        type: int
+    margin:
+        type: float
+
+# Parameters of learning and loading data
+learning:
+    learning_rate:
+        type: float
+    num_epochs:
+        type: int
+    batch_size:
+        type: int
+    shuffle:
+        type: bool
+    num_workers:
+        type: int
+    pin_memory:
+        type: bool
+        default: False
+
+# Learning model
+model:
+    method:
+        type: str
+        choices:
+            - hog
+            - cnn
+    cnn_arch:
+        type: str
+        choices:
+            - densenet161
+            - resnet152
+            - squeezenet1_1
+    pretrained:
+        type: bool
+ 
+# What metrics are used 
+metric:
+    use_map:
+        type: bool
+    use_acc:
+        type: bool
+    top_k:
+        type: int
+
+# Parameters specific to the experiment
+experiment:
+    origin:
+        type: str
+        choices:
+            - train
+            - val
+    train_mode:
+        type: str
+        choices:
+            - basic 
+            - orig
+            - degrade 
+    degrade_mode:
+        type: str
+        choices:
+            - blur
+            - sat
+            - none
+    sat_param:
+        type: str
+        choices:
+            - focal_length
+            - none
+    num_folds:
+        type: int
+    cross_val:
+        type: str
+        choices:
+            - 1x1
+            - 1x10
+            - 5x2
+    save_dir:
+        type: str
+
+# Display parameters to be used in another context
+display:
+    bbox_flag:
+        type: bool
+        default: False
+    path_flag:
+        type: bool
+        default: False
+
+# Parameters for logging experimental results
+logging:
+    log_flag:
+        type: bool
+    log_dir:
+        type: str
+
+# Parameters of the sensor system 
+sensor:
+    focal_length:
+        type: float
+    p_diameter: # [meters]
+        type: float
+    s_diameter: # [meters]
+        type: float
+    opticTransmission: #[unitless]
+        type: array
+    alt: #[meters]
+        type: float
+    pixel_pitch: #[meters]
+        type: float
+    Tint: #[seconds]        
+        type: float
+    wvl: # [meters]
+        type: array
+    delta_wvl: # [ microns ]
+        type: array
+    election_well_depth: # max number of elections 
+        type: float
+    bit_depth: # number of bits
+        type: float
+    read_noise: # expressed in electrons
+        type: float
+    add_poissonNoise: # Include poisson noise 
+        type: float
+    QE: # [Quantum Efficiency percentage]
+        type: array
+    force_no_aliasing: # force no aliasing
+        type: int
