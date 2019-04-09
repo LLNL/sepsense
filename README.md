@@ -8,6 +8,12 @@ This repository contains all the code required to replicate the results of our r
 
 ## Instructions
 ### Setup Environment
+The code in this repository is meant to run inside a docker environment. A Dockerfile is included in the ROOT/docker directory which contains an environment sufficient to run all included code. This Dockerfile is based on the official nvidia/cuda image with Ubuntu 18.04 and CUDA 10.
+
+To build the docker image:
+```
+cd docker && ./build.sh
+```
 ### Download Data
 Instructions for downloading the Functional Map of the World dataset are included in the corresponding repo: https://github.com/fMoW/dataset
 ### Pre-Process Data
