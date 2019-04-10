@@ -249,6 +249,84 @@ def top_n(emb_dict, path_dict, min_gallery=6, top_n=10, num_probes=3):
 
     return probe_paths, gallery_paths, gallery_dists, match_idx_arr
 
+def top_n_pick(emb_dict, path_dict, cls_list, min_gallery=6, top_n=10, num_probes=3):
+    print(emb_dict.keys())
+    """
+    Random MAP numpy
+    """
+
+    # Seed RNG.. 2
+    np.random.seed(2)
+
+    avg_precision_list = []
+    cls_set = set()
+
+    # Compute distance matrix
+    num_class = 0
+    probe_emb_list = []
+    gallery_emb_list = []
+    probe_class_list = []
+    gallery_class_list = []
+    probe_path_list = []
+    gallery_path_list = []
+    for c in sorted(emb_dict):
+        Ni = len(emb_dict[c])
+        rand_idx = np.arange(Ni)
+        np.random.shuffle(rand_idx)
+        if (len(emb_dict[c]) > min_gallery) and (c in cls_list) and (c not in cls_set):
+            cls_set.add(c)
+            probe_idx = rand_idx[-1]
+            probe_emb_list.append(emb_dict[c][probe_idx])
+            probe_class_list.append(c)
+            probe_path_list.append(path_dict[c][probe_idx])
+            num_class += 1
+        gallery_idx_list = rand_idx[:max(min_gallery, Ni-1)]
+        for gallery_idx in gallery_idx_list:
+            gallery_emb_list.append(emb_dict[c][gallery_idx])
+            gallery_class_list.append(c)
+            gallery_path_list.append(path_dict[c][gallery_idx])
+    probe_emb_arr = np.array(probe_emb_list).T
+    gallery_emb_arr = np.array(gallery_emb_list).T
+    probe_class_arr = np.array(probe_class_list)
+    gallery_class_arr = np.array(gallery_class_list)
+    probe_path_arr = np.array(probe_path_list)
+    gallery_path_arr = np.array(gallery_path_list)
+
+    # Reshape emb arrs
+    sp = probe_emb_arr.shape
+    sg = gallery_emb_arr.shape
+    probe_emb_arr = probe_emb_arr.reshape((sp[0], 1, sp[1]))
+    gallery_emb_arr = gallery_emb_arr.reshape((sg[0], 1, sg[1]))
+
+    # Select random probes to be used
+    rand_idx = np.random.choice(range(probe_class_arr.shape[0]), num_probes, replace=False)
+    probe_emb_arr_part = probe_emb_arr[:, :, rand_idx]
+    probe_class_arr_part = probe_class_arr[rand_idx]
+
+    # Compute squared differences for all embedding pairs
+    dist_arr = ((gallery_emb_arr - probe_emb_arr_part.swapaxes(1, 2))**2).sum(axis=0)
+
+    probe_paths = probe_path_arr[rand_idx]
+
+    # Vectorize MAP
+    match_idx_arr = []
+    gallery_paths = []
+    gallery_dists = []
+    for j, dist_row in enumerate(dist_arr):
+        # Sort dist row, take all but first element (the identity)
+        gallery_idx = np.argsort(dist_row)
+        gallery_dist = dist_row[gallery_idx][:top_n]
+        gallery_dists.append(gallery_dist)
+        # Get the class indeces corresponding to the sorted distances
+        probe_class = probe_class_arr_part[j]
+        sorted_class_row = gallery_class_arr[gallery_idx]
+        # Produce binary array by comparing the sorted class row to the probe class
+        binary_class_row = sorted_class_row==probe_class
+        match_idx_arr.append(binary_class_row[:top_n])
+        gallery_paths.append(gallery_path_arr[gallery_idx][:top_n])
+
+    return probe_paths, gallery_paths, gallery_dists, match_idx_arr
+
 def map_from_dist(dist_arr, batch_size=80, use_gpu=False, print_time=False):
     """
     Complete MAP given an array of distances.
