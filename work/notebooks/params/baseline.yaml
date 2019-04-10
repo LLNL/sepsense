@@ -1,0 +1,93 @@
+# Parameters of the hardware, important for reproducibility
+hardware:
+    # Checked against CUDA_VISIBLE_DEVICES for correctness
+    num_gpu: 2
+
+# Parameters of the dataset, pre-processing, and partitioning
+data:
+    modality: ms3
+    out_units: reflectance
+    interp_type: nearest
+    interp_range: noscale
+    tensor_range: noscale
+    normalize: False
+    minmax: False
+    minmax_channel: False
+    data_mean: None
+    data_std: None
+    resolution: 224
+    num_class: 35
+    num_inst: 1000
+    proc_mode: center_crop
+    partition_dir: ../partition/ms
+    preload: False
+    preload_dir: /data/sepsense/cache/focal_length_crop_fix19
+
+# Problem
+problem:
+    objective: classifier
+    num_classes: 0
+    num_instances: 0
+    margin: 0
+
+# Parameters of learning and loading data
+learning:
+    learning_rate: 1e-4
+    num_epochs: 5
+    batch_size: 80
+    shuffle: True
+    num_workers: 10
+    pin_memory: False
+
+# Learning model
+model:
+    method: cnn
+    cnn_arch: densenet161
+    pretrained: True
+ 
+# What metrics are used 
+metric:
+    use_map: True
+    use_acc: True
+    top_k: 3
+
+# Parameters specific to the experiment
+experiment:
+    origin: train
+    train_mode: degrade
+    degrade_mode: sat
+    sat_param: focal_length
+    cross_val: 1x10
+    num_folds: 10
+    save_dir: /data/sepsense/experiments/baseline/trained
+
+# Display parameters to be used in another context
+display:
+    bbox_flag: False
+    path_flag: False
+
+# Parameters for logging experimental results
+logging:
+    log_flag: True
+    log_dir: /data/sepsense/experiments/baseline/logs
+
+# Parameters of the sensor system 
+sensor:
+    focal_length:
+        - 0.1
+        - 1.01
+        - 0.1
+    p_diameter: .075
+    s_diameter: .0075
+    opticTransmission: [.95, .95, .95]
+    alt: 500e3
+    pixel_pitch: 6e-6
+    Tint: .00025
+    wvl: [4.5e-7, 5.5e-7, 6.5e-7]
+    delta_wvl: [.1, .1, .1]
+    election_well_depth: 40300
+    bit_depth: 13
+    read_noise: 12.5
+    add_poissonNoise: 1
+    QE: [.22, .22, .16]
+    force_no_aliasing: 0
