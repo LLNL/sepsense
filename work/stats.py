@@ -250,7 +250,6 @@ def top_n(emb_dict, path_dict, min_gallery=6, top_n=10, num_probes=3):
     return probe_paths, gallery_paths, gallery_dists, match_idx_arr
 
 def top_n_pick(emb_dict, path_dict, cls_list, min_gallery=6, top_n=10, num_probes=3):
-    print(emb_dict.keys())
     """
     Random MAP numpy
     """

@@ -19,7 +19,6 @@ from models import Pass, Reshape, Reshape2
 import models
 import stats
 from params import parse_params
-import squeezenet
 import metrics
 import brisque.brisque as brisque
 
@@ -379,18 +378,6 @@ class TrainPipeline(Pipeline):
                 self.net = torchvision.models.resnet152(pretrained=params.model.pretrained)
                 self.net.fc = torch.nn.Linear(2048, 128)
                 self.classifier = torch.nn.Linear(128, self.params.data.num_class)
-            elif params.model.cnn_arch == 'squeezenet1_1':
-                self.net = squeezenet.squeezenet1_1(pretrained=params.model.pretrained)
-                self.net.classifier = Pass()
-                self.net.num_classes = self.params.data.num_class
-                self.classifier = torch.nn.Sequential(
-                    Reshape2(),
-                    torch.nn.Dropout(p=0.5),
-                    torch.nn.Conv2d(512, self.params.data.num_class, kernel_size=1),
-                    torch.nn.ReLU(inplace=True),
-                    torch.nn.AvgPool2d(13, stride=1),
-                    Reshape(self.params.data.num_class)
-                )
             elif params.model.cnn_arch == 'squeezenet1_1_alt':
                 self.net = torchvision.models.squeezenet1_1(pretrained=params.model.pretrained)
                 self.net.num_classes = 128
