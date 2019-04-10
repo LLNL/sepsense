@@ -22,12 +22,17 @@ The core purpose of the code is to measure how different sensor design configura
 ### Analyze Results
 
 #### Show Transformations
+In REPO_ROOT/work/notebooks/transform.ipynb, sensor model imagery can be simulated for any image in the fMoW dataset. The sensor model parameters can be reconfigured as desired. In the figure below, a race track image is plotted using our "baseline" parameter configuration, with the focal length varied. The original image is shown on the right.
 ![Alt](./.md/transform.png "caption")
 
 #### Plot Results
+In REPO_ROOT/work/notebooks/plot.ipynb, experimental results can be plotted and compared. In the plots below, average precision is plotted as a function of focal length for five different CNN architectures. The plot on the right shows that the curves are very similar when normalized.
 ![Alt](./.md/plot.png "caption")
 
 #### Visualize Retrieval
+In REPO_ROOT/work/notebooks/retrieve.ipynb, the retrieval problem is visualized. Each row of images represents a
+single retrieval query. Probe images are shown on the left of each row. Gallery images are ranked by least to greatest Euclidean
+distance, left to right, from the probe. The Euclidean distance value between a gallery image and its corresponding probe is shown in the upper right of each gallery image. This distance value is colored green if the gallery image class matches its probe image class, and red if its does not.
 ![Alt](./.md/retrieval.png "caption")
 
 ## Run Instructions
