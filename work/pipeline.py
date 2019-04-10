@@ -19,6 +19,7 @@ from models import Pass, Reshape, Reshape2
 import models
 import stats
 from params import parse_params
+import squeezenet
 import metrics
 import brisque.brisque as brisque
 
@@ -378,6 +379,18 @@ class TrainPipeline(Pipeline):
                 self.net = torchvision.models.resnet152(pretrained=params.model.pretrained)
                 self.net.fc = torch.nn.Linear(2048, 128)
                 self.classifier = torch.nn.Linear(128, self.params.data.num_class)
+            elif params.model.cnn_arch == 'squeezenet1_1':
+                self.net = squeezenet.squeezenet1_1(pretrained=params.model.pretrained)
+                self.net.classifier = Pass()
+                self.net.num_classes = self.params.data.num_class
+                self.classifier = torch.nn.Sequential(
+                    Reshape2(),
+                    torch.nn.Dropout(p=0.5),
+                    torch.nn.Conv2d(512, self.params.data.num_class, kernel_size=1),
+                    torch.nn.ReLU(inplace=True),
+                    torch.nn.AvgPool2d(13, stride=1),
+                    Reshape(self.params.data.num_class)
+                )
             elif params.model.cnn_arch == 'squeezenet1_1_alt':
                 self.net = torchvision.models.squeezenet1_1(pretrained=params.model.pretrained)
                 self.net.num_classes = 128
@@ -1212,14 +1225,11 @@ class TestPipeline(Pipeline):
 
         return feat_dict, idx_dict
         
-    def viz_prep2(self, feat_dict, idx_dict, min_gallery=0, top_n=3, num_probes=1):
+    def viz_prep2(self, feat_dict, idx_dict, cls_list, min_gallery=0, top_n=3, num_probes=1):
         # Val MAP
-        probe_idx_list, gallery_idx_list, dist_list, match_idx_arr = stats.top_n(feat_dict, idx_dict, 
+        probe_idx_list, gallery_idx_list, dist_list, match_idx_arr = stats.top_n_pick(feat_dict, idx_dict, cls_list,
             min_gallery=min_gallery, top_n=top_n, num_probes=num_probes)
 
-        #print(probe_paths)
-        #print(gallery_paths)
-        #print(match_idx_arr)
         new_transform_list = self.transform_list[:-2]
         new_transform_list.extend([
             lambda x: x if type(x) == np.ndarray else x.im,
@@ -1227,8 +1237,8 @@ class TestPipeline(Pipeline):
             lambda x: x/x.max(),
             lambda x: (x*255).astype(np.uint8),
             torchvision.transforms.ToPILImage(),        
+            torchvision.transforms.Resize((224, 224)),
         ])
-        print(new_transform_list)
         transform = torchvision.transforms.Compose(new_transform_list)
 
         # Denormalize images

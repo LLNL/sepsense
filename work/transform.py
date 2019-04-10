@@ -80,7 +80,7 @@ class CenterCrop(object):
         yc = (y0+y1)//2
         # Center crop limits
         if True:
-            hr = min(tw - xc, xc, th - yc, yc, self.hr)
+            hr = min(tw - xc, xc, th - yc, yc)
         # Get new image bounds
         xn0 = xc - hr
         xn1 = xc + hr
@@ -104,7 +104,6 @@ class CenterCrop(object):
             yn1 = th
         # Crop the image
         dgim.im = dgim.im[yn0:yn1, xn0:xn1]
-        dgim.im = skimage.transform.resize(dgim.im, (self.hr, self.hr), order=1)
 
         return dgim, bbox, path
 
