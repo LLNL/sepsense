@@ -1,5 +1,4 @@
 # Remote Sensor Design for Visual Recognition with Convolutional Neural Networks
-TODO: edit down, include same version in eSoftware?
 While deep learning technologies for computer vision have developed rapidly since 2012, modeling of remote sensing systems has remained focused around human vision. In particular, remote sensing systems are usually constructed to optimize sensing cost-quality trade-offs with respect to human image interpretability. While some recent studies have explored remote sensing system design as a function of simple computer vision algorithm performance, there has been little work relating this design to the state-of-the-art in computer vision: deep learning with convolutional neural networks. We develop experimental systems to conduct this analysis, showing results with modern deep learning algorithms and recent overhead image data. Our results are compared to standard image quality measurements based on human visual perception, and we conclude not only that machine and human interpretability differ significantly, but that computer vision performance is largely self-consistent across a range of disparate conditions.
 
 This repository contains all the code required to replicate the results of our research paper, and the corresponding docker environment in which that code can be executed. All code is written in Python3 and utilizes the PyTorch library (v1.0) for neural network model training and evaluation. Jupyter notebooks are used to visualize images transformed with our code, in addition to plotting experimental results. We also include the specific parameter files used to execute our experiments, with the intent that these experiments can be replicated.
@@ -68,10 +67,16 @@ This partition will be saved to REPO_ROOT/work/partition/ms/train_items_35_1x10-
 ### Run Experiment
 
 #### Configure Parameters
+First, a YAML parameter file needs to be created. Check out REPO_ROOT/work/params/baseline.yaml for an example. The parameter file divides parameters into logical groupings. For example, there are parameter groupings corresponding to the data, the CNN model, and the sensor simulation model. The data.partition_dir parameter will be configured to match the one output from the data pre-processing step.
 
 #### Start Trial
+To launch a trial with a given parameter file, check out the REPO_ROOT/work/run.sh script. This script will run the given trial (second parameter) on the specified GPU devices (first parameter). Example usage for the baseline.yaml file:
+```
+container:/home/username/work# ./run.sh 0,1 baseline
+```
 
 ### View Results
+To plot experimental results, check out REPO_ROOT/work/notebooks/plot.ipynb for examples. The code to plot and parse results from all different experiment types is contained in REPO_ROOT/work/notebooks/analysis.py.
 
 ## License
 TBD
