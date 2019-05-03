@@ -71,3 +71,6 @@ RUN cd Python/libsvm && make && cd python && make
 
 # Extra
 RUN apt-get install -y python3-gdal
+
+# libSM needed for OpenCV
+RUN apt-get install -y libsm-dev
