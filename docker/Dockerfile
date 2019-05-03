@@ -31,8 +31,6 @@ RUN pip3 install ipython
 RUN pip3 install jupyter
 # Jupyter extensions
 RUN pip3 install jupyter_contrib_nbextensions && jupyter contrib nbextension install
-# Add imageio to make .gif files in python
-RUN pip3 install imageio
 # Data processing libs
 RUN pip3 install numpy==1.15.4
 RUN pip3 install scipy
@@ -73,4 +71,3 @@ RUN cd Python/libsvm && make && cd python && make
 
 # Extra
 RUN apt-get install -y python3-gdal
-RUN apt-get install -y libsm-dev
