@@ -5,7 +5,7 @@ While deep learning technologies for computer vision have developed rapidly sinc
 
 This repository contains all the code required to replicate the results of our research paper, and the corresponding docker environment in which that code can be executed. All code is written in Python3 and utilizes the PyTorch library (v1.0) for neural network model training and evaluation. Jupyter notebooks are used to visualize images transformed with our code, in addition to plotting experimental results. We also include the specific parameter files used to execute our experiments, with the intent that these experiments can be replicated.
 
-A link to the paper will be added shortly. Authors: Lucas W. Jaffe, Michael E. Zelinski, and Wesam A. Sakla
+A link to the arXiv.org preprint of this article can be found here: https://arxiv.org/abs/1906.09677. The article will appear shortly in IEEE Transactions on Geoscience and Remote Sensing. Authors: Lucas W. Jaffe, Michael E. Zelinski, and Wesam A. Sakla
 
 ## Capabilities
 This code has the ability to reproduce the experiments from our research paper, and many of our visualizations.
