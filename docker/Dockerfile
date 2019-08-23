@@ -74,3 +74,7 @@ RUN apt-get install -y python3-gdal
 
 # libSM needed for OpenCV
 RUN apt-get install -y libsm-dev
+
+# Create user with your username
+RUN useradd --create-home --shell /bin/bash --groups sudo username
+RUN echo "username:password" | chpasswd

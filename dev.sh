@@ -15,4 +15,7 @@ docker run --runtime=nvidia \
  --volume="$HOME/.Xauthority:/root/.Xauthority:rw" \
  --ulimit core=0 \
  --privileged \
- sepsense:v0.8 /bin/bash
+ -u root \
+ sepsense:v0.8 bash -c "usermod -u $(id -u) username;
+                        groupmod -g $(id -g) username;
+                        su username;"
