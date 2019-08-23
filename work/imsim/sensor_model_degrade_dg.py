@@ -217,10 +217,6 @@ class dg_rgb_im:
             elif h > w:
                 f = self.im.shape[0] / h
             self.meta['square'] = round(lb*f), round(ub*f), round(w*f), round(h*f)
-        #if 'pc' in self.meta:
-        #    print(self.meta['pc'])
-        #    self.meta['pc'] = max(1, round(self.meta['pc']*f))
-        #    print(self.meta['pc'])
             
     def restoreDimensions(self):
         """
@@ -252,12 +248,11 @@ class dg_rgb_im:
         
     def displayIm_DN(self):
         plt.figure()
-        #plt.imshow((self.im * [255,255,255] / self.im.max(axis=0).max(axis=0)).astype('uint8'), interpolation = 'nearest')
         plt.imshow( (self.im * [255,255,255] / self.im.max()).astype('uint8'), interpolation = 'nearest')
         
     def displayBB(self):
         bb = self.meta.get('bounding_boxes')
-        scalar =  [255,255,255] / self.im.max() #self.im.max(axis=0).max(axis=0)
+        scalar =  [255,255,255] / self.im.max()
         for i in bb:
             coords = i.get('box')
             plt.figure()
@@ -486,20 +481,12 @@ def degradeIm(im, sat, displayImages=0, verbose=0, im_out_units=0):
         if verbose:
             print('Forcing no aliasing')
     
-    #print(freq_limit)
     Xi_wv = Xi_wv[freq_limit[0]:freq_limit[1]]
-    #print(Xi_wv)
     
     if verbose:
         print('Frequency limited image length: ' + str(Xi_wv.shape))
         print('Frequency limits: ' + str(freq_limit))
         
-    #if sat.gnd_nyquist < sat.gnd_optCut[0]:  # if the highest spatial frequency passed is limited by the detector then determine where lowest frequency is.
-    #    nyq_i = np.array([np.abs(Xi_wv + sat.gnd_nyquist).argmin(), np.abs(Xi_wv - sat.gnd_nyquist).argmin()]) # nyquist optics and focalplane intersection.  Use blue band.
-    #else:
-    #    #nyq_i = np.array([np.abs(Xi_wv + sat.gnd_optCut[0]).argmin(), np.abs(Xi_wv - sat.gnd_optCut[0]).argmin()])   
-    #    nyq_i = np.array([np.abs(Xi_wv + sat.gnd_nyquist).argmin(), np.abs(Xi_wv - sat.gnd_nyquist).argmin()])
-
     nyq_i = np.array([np.abs(Xi_wv + sat.gnd_nyquist).argmin(), np.abs(Xi_wv - sat.gnd_nyquist).argmin()]) # determine the sampling intersection between the ground and detector.
     
     if verbose:
@@ -527,11 +514,6 @@ def degradeIm(im, sat, displayImages=0, verbose=0, im_out_units=0):
             fim = np.zeros((Xi_wv.shape[0],Xi_wv.shape[0],nb), dtype=np.complex_)
             im_blur = np.zeros((nyq_i[1]-nyq_i[0]+0,nyq_i[1]-nyq_i[0]+0,nb))
         else:
-            #apertures = np.zeros((nyq_i[1]-nyq_i[0]+0,nyq_i[1]-nyq_i[0]+0,nb))
-            #psf = np.zeros((nyq_i[1]-nyq_i[0]+0,nyq_i[1]-nyq_i[0]+0,nb), dtype=np.complex_)
-            #ftim= np.zeros((nyq_i[1]-nyq_i[0]+0,nyq_i[1]-nyq_i[0]+0,nb), dtype=np.complex_)
-            #fim = np.zeros((nyq_i[1]-nyq_i[0]+0,nyq_i[1]-nyq_i[0]+0,nb), dtype=np.complex_)
-            #mtf = np.zeros((nyq_i[1]-nyq_i[0]+0,nyq_i[1]-nyq_i[0]+0,nb), dtype=np.complex_)
             apertures = np.zeros((Xi_wv.shape[0],Xi_wv.shape[0],nb))
             psf = np.zeros((Xi_wv.shape[0],Xi_wv.shape[0],nb), dtype=np.complex_)
             mtf = np.zeros((Xi_wv.shape[0],Xi_wv.shape[0],nb), dtype=np.complex_)
@@ -545,8 +527,6 @@ def degradeIm(im, sat, displayImages=0, verbose=0, im_out_units=0):
         
         if aliasing:
             nyq_opt_gnd_int[i,:] = np.array([np.abs(Xi_wv + sat.gnd_optCut[i]).argmin(), np.abs(Xi_wv - sat.gnd_optCut[i]).argmin()]) # nyquist optics and ground intersection
-            #print(ns)
-            #print( nyq_opt_gnd_int )
             apertures[:,:,i] = np.fft.fftshift(circle(ns, (nyq_opt_gnd_int[i,1]-nyq_opt_gnd_int[i,0])/4)) # create aperatures and fftshift them.
 
             psf[:,:,i] = np.abs(np.fft.fft2(apertures[:,:,i]))**2 # compute point spread function
@@ -554,13 +534,6 @@ def degradeIm(im, sat, displayImages=0, verbose=0, im_out_units=0):
 
             mtf[:,:,i] = np.fft.fftshift(np.abs(np.fft.fft2(psf[:,:,i])))[freq_limit[0]:freq_limit[1],freq_limit[0]:freq_limit[1]] # crop at optical cutoff
             ftim[:,:,i] = 1/(im.im.shape[0]*im.im.shape[1]) * np.fft.fftshift(np.fft.fft2(im.im[:,:,i]))[freq_limit[0]:freq_limit[1],freq_limit[0]:freq_limit[1]] # crop at optical cutoff
-#            print(nyq_i)
-#            print( 'Upper bounds1: ' + str(nyq_i[1] - nyq_i[0]) )
-#            print( 'Upper bounds2: ' + str( nyq_i[1] ) )
-#            print( 'Lower bounds1: ' + str( nyq_i[0] ) )
-#            print( 'Lower bounds2: ' + str( nyq_i[0]+nyq_i[0] ) )
-#            print( 'Image Sample 1, 0 and : ' + str( nyq_i[0] ) )
-#            print( 'Image Sample 2, ' + str(nyq_i[1]) + ' and ' + str( nyq_i[1]+nyq_i[0] ) )
             
             fim[:,:,i] = mtf[:,:,i] * ftim[:,:,i]
             ftim_alias_1[ nyq_i[1] - nyq_i[0] : nyq_i[1],:,i] = fim[0:nyq_i[0],:,i] # calculate aliased frequencies and fold back into aliased signal
@@ -580,23 +553,10 @@ def degradeIm(im, sat, displayImages=0, verbose=0, im_out_units=0):
             mtf[:,:,i] = np.fft.fftshift(np.abs(np.fft.fft2(psf[:,:,i])))
             ftim[:,:,i] = 1/(im.im.shape[0]*im.im.shape[1]) * np.fft.fftshift(np.fft.fft2(im.im[:,:,i]))[freq_limit[0]:freq_limit[1],freq_limit[0]:freq_limit[1]]
             if sat.force_no_aliasing:
-                im_blur[:,:,i] = (nyq_i[1]+1 - nyq_i[0])**2 * np.abs( np.fft.ifft2( np.fft.fftshift((mtf[:,:,i] * ftim[:,:,i])[nyq_i[0]:nyq_i[1], nyq_i[0]:nyq_i[1]]  )))#[nyq_opt_gnd_int[i,0]:nyq_opt_gnd_int[i,1]+1, nyq_opt_gnd_int[i,0]:nyq_opt_gnd_int[i,1]+1]
+                im_blur[:,:,i] = (nyq_i[1]+1 - nyq_i[0])**2 * np.abs( np.fft.ifft2( np.fft.fftshift((mtf[:,:,i] * ftim[:,:,i])[nyq_i[0]:nyq_i[1], nyq_i[0]:nyq_i[1]]  )))
             else:
                 im_blur[:,:,i] = ftim.shape[0] * ftim.shape[1] * np.abs( np.fft.ifft2( np.fft.fftshift((mtf[:,:,i] * ftim[:,:,i]) ) ) )
-                #zeroFreq = (mtf[:,:,i]==mtf[:,:,i].max()).nonzero()
-                #print('zero frequency: ' + str(zeroFreq[0]) + ' ' + str(zeroFreq[1]))
-                #print('image mean: ' + str(im.im[:,:,i].mean()) )
-                #print('maximum band mtf value: ' + str( mtf[:,:,i].max() ) )
-                #print('maximum band image value: ' + str( ftim[:,:,i].max())) 
-                #print('blur image mean: ' + str(im_blur[:,:,i].mean()) )
-                #print( (mtf[:,:,i]==mtf[:,:,i].max()).nonzero() )
-                #print( (ftim[:,:,i]==ftim[:,:,i].max()).nonzero() )
-                
 
-    #print('image mean: ' + str(im.im.mean()) )
-    #print('maximum band value: ' + str( mtf.max() ) )
-    #print('blur image mean: ' + str(im_blur.mean()) )
-    
     if displayImages:
         plt.figure()
         plt.imshow( np.abs(mtf[:,:,0]>.00001 ) , interpolation = 'nearest')
@@ -634,7 +594,6 @@ def degradeIm(im, sat, displayImages=0, verbose=0, im_out_units=0):
         poissonNoise = 0
     
     readNoise = np.random.randn(im_blur.shape[0],im_blur.shape[1],im_blur.shape[2]) * sat.read_noise # expressed in electrons
-    #noise = np.sqrt( readNoise**2 + poissonNoise**2 )
     noise = readNoise + poissonNoise # See thesis. System noise adds in quadrature. Noise per-pixel simply sums. 
     
     im_out_meta = im.meta.copy()
@@ -656,7 +615,3 @@ def degradeIm(im, sat, displayImages=0, verbose=0, im_out_units=0):
         print('Output image dimension is: ', str(im_out.shape))
     
     return( dg_rgb_im(meta=im_out_meta, im=im_out) )
-    #return( dg_rgb_im(meta=im.meta, im=np.abs( np.fft.ifft2( fim[:,:,0] + ftim_alias_2[:,:,0]))))
-
-
-
